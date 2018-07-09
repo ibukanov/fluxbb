@@ -90,10 +90,10 @@ if (isset($_GET['tid']))
 				message($lang_common['Bad request'], false, '404 Not Found');
 
 			// Verify that the post IDs are valid
-			$admins_sql = ($pun_user['g_id'] != PUN_ADMIN) ? ' AND poster_id NOT IN('.implode(',', get_admin_ids()).')' : ''; 
-			$result = $db->query('SELECT 1 FROM '.$db->prefix.'posts WHERE id IN('.$posts.') AND topic_id='.$tid.$admins_sql) or error('Unable to check posts', __FILE__, __LINE__, $db->error());
+			$admins_sql = ($pun_user['g_id'] != PUN_ADMIN) ? ' AND poster_id NOT IN('.implode(',', get_admin_ids()).')' : '';
+			$result = $db->query('SELECT COUNT(*) FROM '.$db->prefix.'posts WHERE id IN('.$posts.') AND topic_id='.$tid.$admins_sql) or error('Unable to check posts', __FILE__, __LINE__, $db->error());
 
-			if ($db->num_rows($result) != substr_count($posts, ',') + 1)
+			if ($db->result($result) != substr_count($posts, ',') + 1)
 				message($lang_common['Bad request'], false, '404 Not Found');
 
 			// Delete the posts
@@ -165,8 +165,8 @@ if (isset($_GET['tid']))
 			$num_posts_splitted = substr_count($posts, ',') + 1;
 
 			// Verify that the post IDs are valid
-			$result = $db->query('SELECT 1 FROM '.$db->prefix.'posts WHERE id IN('.$posts.') AND topic_id='.$tid) or error('Unable to check posts', __FILE__, __LINE__, $db->error());
-			if ($db->num_rows($result) != $num_posts_splitted)
+			$result = $db->query('SELECT COUNT(*) FROM '.$db->prefix.'posts WHERE id IN('.$posts.') AND topic_id='.$tid) or error('Unable to check posts', __FILE__, __LINE__, $db->error());
+			if ($db->result($result) != $num_posts_splitted)
 				message($lang_common['Bad request'], false, '404 Not Found');
 
 			// Verify that the move to forum ID is valid
@@ -435,9 +435,9 @@ if (isset($_REQUEST['move_topics']) || isset($_POST['move_topics_to']))
 			message($lang_common['Bad request'], false, '404 Not Found');
 
 		// Verify that the topic IDs are valid
-		$result = $db->query('SELECT 1 FROM '.$db->prefix.'topics WHERE id IN('.implode(',',$topics).') AND forum_id='.$fid) or error('Unable to check topics', __FILE__, __LINE__, $db->error());
+		$result = $db->query('SELECT COUNT(*) FROM '.$db->prefix.'topics WHERE id IN('.implode(',',$topics).') AND forum_id='.$fid) or error('Unable to check topics', __FILE__, __LINE__, $db->error());
 
-		if ($db->num_rows($result) != count($topics))
+		if ($db->result($result) != count($topics))
 			message($lang_common['Bad request'], false, '404 Not Found');
 
 		// Verify that the move to forum ID is valid
@@ -562,12 +562,13 @@ else if (isset($_POST['merge_topics']) || isset($_POST['merge_topics_comply']))
 			message($lang_misc['Not enough topics selected']);
 
 		// Verify that the topic IDs are valid (redirect links will point to the merged topic after the merge)
-		$result = $db->query('SELECT id FROM '.$db->prefix.'topics WHERE id IN('.implode(',', $topics).') AND forum_id='.$fid.' ORDER BY id ASC') or error('Unable to check topics', __FILE__, __LINE__, $db->error());
-		if ($db->num_rows($result) != count($topics))
+		$result = $db->query('SELECT COUNT(id), MIN(id) FROM '.$db->prefix.'topics WHERE id IN('.implode(',', $topics).') AND forum_id='.$fid) or error('Unable to check topics', __FILE__, __LINE__, $db->error());
+		$row = $db->fetch_row();
+		if ($row[0] != count($topics))
 			message($lang_common['Bad request'], false, '404 Not Found');
 
 		// The topic that we are merging into is the one with the smallest ID
-		$merge_to_tid = $db->result($result);
+		$merge_to_tid = $row[1];
 
 		// Make any redirect topics point to our new, merged topic
 		$query = 'UPDATE '.$db->prefix.'topics SET moved_to='.$merge_to_tid.' WHERE moved_to IN('.implode(',', $topics).')';
@@ -663,9 +664,9 @@ else if (isset($_POST['delete_topics']) || isset($_POST['delete_topics_comply'])
 		require PUN_ROOT.'include/search_idx.php';
 
 		// Verify that the topic IDs are valid
-		$result = $db->query('SELECT 1 FROM '.$db->prefix.'topics WHERE id IN('.$topics.') AND forum_id='.$fid) or error('Unable to check topics', __FILE__, __LINE__, $db->error());
+		$result = $db->query('SELECT COUNT(*) FROM '.$db->prefix.'topics WHERE id IN('.$topics.') AND forum_id='.$fid) or error('Unable to check topics', __FILE__, __LINE__, $db->error());
 
-		if ($db->num_rows($result) != substr_count($topics, ',') + 1)
+		if ($db->result($result) != substr_count($topics, ',') + 1)
 			message($lang_common['Bad request'], false, '404 Not Found');
 
 		// Verify that the posts are not by admins

@@ -149,10 +149,10 @@ else if (isset($_POST['update'])) // Change position and name of the categories
 
 // Generate an array with all categories
 $result = $db->query('SELECT id, cat_name, disp_position FROM '.$db->prefix.'categories ORDER BY disp_position') or error('Unable to fetch category list', __FILE__, __LINE__, $db->error());
-$num_cats = $db->num_rows($result);
 
-for ($i = 0; $i < $num_cats; ++$i)
-	$cat_list[] = $db->fetch_assoc($result);
+$cat_list = array();
+while ($row = $db->fetch_assoc($result))
+	$cat_list[] = $row;
 
 $page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_admin_common['Admin'], $lang_admin_common['Categories']);
 define('PUN_ACTIVE_PAGE', 'admin');
@@ -184,7 +184,7 @@ generate_admin_menu('categories');
 			</form>
 		</div>
 
-<?php if ($num_cats): ?>		<h2 class="block2"><span><?php echo $lang_admin_categories['Delete categories head'] ?></span></h2>
+<?php if ($cat_list): ?>		<h2 class="block2"><span><?php echo $lang_admin_categories['Delete categories head'] ?></span></h2>
 		<div class="box">
 			<form method="post" action="admin_categories.php">
 				<div class="inform">
@@ -214,7 +214,7 @@ generate_admin_menu('categories');
 		</div>
 <?php endif; ?>
 
-<?php if ($num_cats): ?>		<h2 class="block2"><span><?php echo $lang_admin_categories['Edit categories head'] ?></span></h2>
+<?php if ($cat_list): ?>		<h2 class="block2"><span><?php echo $lang_admin_categories['Edit categories head'] ?></span></h2>
 		<div class="box">
 			<form method="post" action="admin_categories.php">
 				<div class="inform">

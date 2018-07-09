@@ -150,14 +150,11 @@ require PUN_ROOT.'header.php';
 
 // Retrieve a list of topic IDs, LIMIT is (really) expensive so we only fetch the IDs here then later fetch the remaining data
 $result = $db->query('SELECT id FROM '.$db->prefix.'topics WHERE forum_id='.$id.' ORDER BY sticky DESC, '.$sort_by.', id DESC LIMIT '.$start_from.', '.$pun_user['disp_topics']) or error('Unable to fetch topic IDs', __FILE__, __LINE__, $db->error());
+$topic_ids = $db->result_column($result);
 
 // If there are topics in this forum
-if ($db->num_rows($result))
+if ($topic_ids)
 {
-	$topic_ids = array();
-	for ($i = 0; $cur_topic_id = $db->result($result, $i); $i++)
-		$topic_ids[] = $cur_topic_id;
-
 	// Fetch list of topics to display on this page
 	if ($pun_user['is_guest'] || $pun_config['o_show_dot'] == '0')
 	{

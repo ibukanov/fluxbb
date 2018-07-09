@@ -217,9 +217,7 @@ $post_count = 0; // Keep track of post numbers
 // Retrieve a list of post IDs, LIMIT is (really) expensive so we only fetch the IDs here then later fetch the remaining data
 $result = $db->query('SELECT id FROM '.$db->prefix.'posts WHERE topic_id='.$id.' ORDER BY id LIMIT '.$start_from.','.$pun_user['disp_posts']) or error('Unable to fetch post IDs', __FILE__, __LINE__, $db->error());
 
-$post_ids = array();
-for ($i = 0;$cur_post_id = $db->result($result, $i);$i++)
-	$post_ids[] = $cur_post_id;
+$post_ids = $db->result_column($result);
 
 if (empty($post_ids))
 	error('The post table and topic table seem to be out of sync!', __FILE__, __LINE__);

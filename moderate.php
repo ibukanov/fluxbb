@@ -325,9 +325,7 @@ if (isset($_GET['tid']))
 	// Retrieve a list of post IDs, LIMIT is (really) expensive so we only fetch the IDs here then later fetch the remaining data
 	$result = $db->query('SELECT id FROM '.$db->prefix.'posts WHERE topic_id='.$tid.' ORDER BY id LIMIT '.$start_from.','.$pun_user['disp_posts']) or error('Unable to fetch post IDs', __FILE__, __LINE__, $db->error());
 
-	$post_ids = array();
-	for ($i = 0;$cur_post_id = $db->result($result, $i);$i++)
-		$post_ids[] = $cur_post_id;
+	$post_ids = $db->result_column($result);
 
 	// Retrieve the posts (and their respective poster)
 	$result = $db->query('SELECT u.title, u.num_posts, g.g_id, g.g_user_title, p.id, p.poster, p.poster_id, p.message, p.hide_smilies, p.posted, p.edited, p.edited_by FROM '.$db->prefix.'posts AS p INNER JOIN '.$db->prefix.'users AS u ON u.id=p.poster_id INNER JOIN '.$db->prefix.'groups AS g ON g.g_id=u.group_id WHERE p.id IN ('.implode(',', $post_ids).') ORDER BY p.id', true) or error('Unable to fetch post info', __FILE__, __LINE__, $db->error());
@@ -585,9 +583,7 @@ else if (isset($_POST['merge_topics']) || isset($_POST['merge_topics_comply']))
 		// Update any subscriptions
 		$result = $db->query('SELECT DISTINCT user_id FROM '.$db->prefix.'topic_subscriptions WHERE topic_id IN('.implode(',', $topics).')') or error('Unable to fetch subscriptions of merged topics', __FILE__, __LINE__, $db->error());
 
-		$subscribed_users = array();
-		while ($row = $db->fetch_row($result))
-			$subscribed_users[] = $row[0];
+		$subscribed_users = $db->result_column($result);
 
 		$db->query('DELETE FROM '.$db->prefix.'topic_subscriptions WHERE topic_id IN('.implode(',', $topics).')') or error('Unable to delete subscriptions of merged topics', __FILE__, __LINE__, $db->error());
 
@@ -884,14 +880,11 @@ require PUN_ROOT.'header.php';
 
 // Retrieve a list of topic IDs, LIMIT is (really) expensive so we only fetch the IDs here then later fetch the remaining data
 $result = $db->query('SELECT id FROM '.$db->prefix.'topics WHERE forum_id='.$fid.' ORDER BY sticky DESC, '.$sort_by.', id DESC LIMIT '.$start_from.', '.$pun_user['disp_topics']) or error('Unable to fetch topic IDs', __FILE__, __LINE__, $db->error());
+$topic_ids = $db->result_column($result);
 
 // If there are topics in this forum
-if ($db->num_rows($result))
+if ($topic_ids)
 {
-	$topic_ids = array();
-	for ($i = 0;$cur_topic_id = $db->result($result, $i);$i++)
-		$topic_ids[] = $cur_topic_id;
-
 	// Select topics
 	$result = $db->query('SELECT id, poster, subject, posted, last_post, last_post_id, last_poster, num_views, num_replies, closed, sticky, moved_to FROM '.$db->prefix.'topics WHERE id IN('.implode(',', $topic_ids).') ORDER BY sticky DESC, '.$sort_by.', id DESC') or error('Unable to fetch topic list for forum', __FILE__, __LINE__, $db->error());
 

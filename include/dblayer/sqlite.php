@@ -147,6 +147,18 @@ class DBLayer
 	}
 
 
+	function result_column($query_id = 0, $col = 0)
+	{
+		if (!$query_id)
+			return false;
+
+		$column = array();
+		while ($row = @sqlite_fetch_array($query_id, SQLITE_NUM))
+			$column[] = $row[$col];
+		return $column;
+	}
+
+
 	function fetch_assoc($query_id = 0)
 	{
 		if ($query_id)

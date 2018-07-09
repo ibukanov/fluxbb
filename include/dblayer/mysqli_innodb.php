@@ -133,6 +133,18 @@ class DBLayer
 	}
 
 
+	function result_column($query_id = 0, $col = 0)
+	{
+		if (!$query_id)
+			return false;
+
+		$column = array();
+		while ($row = @mysqli_fetch_row($query_id))
+			$column[] = $row[$col];
+		return $column;
+	}
+
+
 	function fetch_assoc($query_id = 0)
 	{
 		return ($query_id) ? @mysqli_fetch_assoc($query_id) : false;

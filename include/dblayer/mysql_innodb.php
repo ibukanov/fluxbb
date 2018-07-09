@@ -122,6 +122,19 @@ class DBLayer
 	}
 
 
+	function result_column($query_id = 0, $col = 0)
+	{
+		if (!$query_id)
+			return false;
+
+		$num_rows = @mysql_num_rows($query_id);
+		$column = array();
+		for ($row = 0; $row < $num_rows; ++$row)
+			$column[] = @mysql_result($query_id, $row, $col);
+		return $column;
+	}
+
+
 	function fetch_assoc($query_id = 0)
 	{
 		return ($query_id) ? @mysql_fetch_assoc($query_id) : false;

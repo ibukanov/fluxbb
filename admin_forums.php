@@ -59,13 +59,10 @@ else if (isset($_GET['del_forum']))
 
 		// Locate any "orphaned redirect topics" and delete them
 		$result = $db->query('SELECT t1.id FROM '.$db->prefix.'topics AS t1 LEFT JOIN '.$db->prefix.'topics AS t2 ON t1.moved_to=t2.id WHERE t2.id IS NULL AND t1.moved_to IS NOT NULL') or error('Unable to fetch redirect topics', __FILE__, __LINE__, $db->error());
-		$num_orphans = $db->num_rows($result);
+		$orphans = $db->result_column($result);
 
-		if ($num_orphans)
+		if ($orphans)
 		{
-			for ($i = 0; $i < $num_orphans; ++$i)
-				$orphans[] = $db->result($result, $i);
-
 			$db->query('DELETE FROM '.$db->prefix.'topics WHERE id IN('.implode(',', $orphans).')') or error('Unable to delete redirect topics', __FILE__, __LINE__, $db->error());
 		}
 

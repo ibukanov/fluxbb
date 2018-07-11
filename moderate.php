@@ -489,7 +489,11 @@ if (isset($_REQUEST['move_topics']) || isset($_POST['move_topics_to']))
 	}
 
 	$result = $db->query('SELECT c.id AS cid, c.cat_name, f.id AS fid, f.forum_name FROM '.$db->prefix.'categories AS c INNER JOIN '.$db->prefix.'forums AS f ON c.id=f.cat_id LEFT JOIN '.$db->prefix.'forum_perms AS fp ON (fp.forum_id=f.id AND fp.group_id='.$pun_user['g_id'].') WHERE (fp.post_topics IS NULL OR fp.post_topics=1) AND f.redirect_url IS NULL ORDER BY c.disp_position, c.id, f.disp_position') or error('Unable to fetch category/forum list', __FILE__, __LINE__, $db->error());
-	if ($db->num_rows($result) < 2)
+	$first_forum = $db->fetch_assoc($result);
+	$second_forum = null;
+	if ($first_forum)
+		$second_forum = $db->fetch_assoc($result);
+	if (!$second_forum)
 		message($lang_misc['Nowhere to move']);
 
 	$page_title = array(pun_htmlspecialchars($pun_config['o_board_title']), $lang_misc['Moderate']);
@@ -511,8 +515,16 @@ if (isset($_REQUEST['move_topics']) || isset($_POST['move_topics_to']))
 <?php
 
 	$cur_category = 0;
-	while ($cur_forum = $db->fetch_assoc($result))
+	for ($i = 0; ; ++$i)
 	{
+		if ($i === 0)
+			$cur_forum = $first_forum;
+		elseif ($i === 1)
+			$cur_forum = $second_forum;
+		else
+			$cur_forum = $db->fetch_assoc($result);
+		if (!$cur_forum)
+			break;
 		if ($cur_forum['cid'] != $cur_category) // A new category since last iteration?
 		{
 			if ($cur_category)

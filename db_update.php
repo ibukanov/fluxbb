@@ -397,7 +397,7 @@ function convert_table_utf8($table, $callback, $old_charset, $key = null, $start
 		if (!is_null($start_at) && $end_at > 0)
 		{
 			$result = $db->query('SELECT 1 FROM '.$table.' WHERE '.$key.'>'.$end_at.' ORDER BY '.$key.' ASC LIMIT 1') or error('Unable to check for next row', __FILE__, __LINE__, $db->error());
-			$finished = $db->num_rows($result) == 0;
+			$finished = !$db->num_rows($result);
 		}
 
 		// Only swap the tables if we are doing this in 1 go, or it's the last go
@@ -435,7 +435,7 @@ function convert_table_utf8($table, $callback, $old_charset, $key = null, $start
 		if (!is_null($start_at) && $end_at > 0)
 		{
 			$result = $db->query('SELECT 1 FROM '.$table.' WHERE '.$key.'>'.$end_at.' ORDER BY '.$key.' ASC LIMIT 1') or error('Unable to check for next row', __FILE__, __LINE__, $db->error());
-			if ($db->num_rows($result) == 0)
+			if (!$db->num_rows($result))
 				return true;
 
 			return $end_at;
@@ -1727,7 +1727,7 @@ foreach ($errors[$id] as $cur_error)
 		{
 			$result = $db->query('SELECT 1 FROM '.$db->prefix.'posts WHERE id > '.$end_at.' ORDER BY id ASC LIMIT 1') or error('Unable to fetch next ID', __FILE__, __LINE__, $db->error());
 
-			if ($db->num_rows($result) > 0)
+			if ($db->num_rows($result))
 				$query_str = '?stage=preparse_posts&start_at='.$end_at;
 		}
 
@@ -1761,7 +1761,7 @@ foreach ($errors[$id] as $cur_error)
 		if ($end_at > 0)
 		{
 			$result = $db->query('SELECT 1 FROM '.$db->prefix.'users WHERE id > '.$end_at.' ORDER BY id ASC LIMIT 1') or error('Unable to fetch next ID', __FILE__, __LINE__, $db->error());
-			if ($db->num_rows($result) > 0)
+			if ($db->num_rows($result))
 				$query_str = '?stage=preparse_sigs&start_at='.$end_at;
 		}
 
@@ -1822,7 +1822,7 @@ foreach ($errors[$id] as $cur_error)
 		{
 			$result = $db->query('SELECT 1 FROM '.$db->prefix.'posts WHERE id > '.$end_at.' ORDER BY id ASC LIMIT 1') or error('Unable to fetch next ID', __FILE__, __LINE__, $db->error());
 
-			if ($db->num_rows($result) > 0)
+			if ($db->num_rows($result))
 				$query_str = '?stage=rebuild_idx&start_at='.$end_at;
 		}
 

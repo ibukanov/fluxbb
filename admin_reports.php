@@ -35,7 +35,7 @@ if (isset($_POST['zap_id']))
 
 	// Delete old reports (which cannot be viewed anyway)
 	$result = $db->query('SELECT zapped FROM '.$db->prefix.'reports WHERE zapped IS NOT NULL ORDER BY zapped DESC LIMIT 10,1') or error('Unable to fetch read reports to delete', __FILE__, __LINE__, $db->error());
-	if ($db->num_rows($result) > 0)
+	if ($db->num_rows($result))
 	{
 		$zapped_threshold = $db->result($result);
 		$db->query('DELETE FROM '.$db->prefix.'reports WHERE zapped <= '.$zapped_threshold) or error('Unable to delete old read reports', __FILE__, __LINE__, $db->error());

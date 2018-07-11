@@ -267,7 +267,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 						break;
 				}
 
-				if ($db->num_rows($result))
+				if ($db->has_rows($result))
 				{
 					$user_ids = array();
 					while ($row = $db->fetch_row($result))
@@ -411,7 +411,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 		$old_searches = array();
 		$result = $db->query('SELECT ident FROM '.$db->prefix.'online') or error('Unable to fetch online list', __FILE__, __LINE__, $db->error());
 
-		if ($db->num_rows($result))
+		if ($db->has_rows($result))
 		{
 			while ($row = $db->fetch_row($result))
 				$old_searches[] = '\''.$db->escape($row[0]).'\'';
@@ -511,7 +511,7 @@ if (isset($_GET['action']) || isset($_GET['search_id']))
 				$subscriber_id = $search_type[2];
 				$result = $db->query('SELECT username FROM '.$db->prefix.'users WHERE id='.$subscriber_id) or error('Unable to fetch username of subscriber', __FILE__, __LINE__, $db->error());
 
-				if ($db->num_rows($result))
+				if ($db->has_rows($result))
 					$subscriber_name = $db->result($result);
 				else
 					message($lang_common['Bad request'], false, '404 Not Found');
@@ -816,7 +816,7 @@ if ($pun_config['o_search_all_forums'] == '1' || $pun_user['is_admmod'])
 				echo "\t\t\t\t\t\t\t\t".'</div>'."\n";
 				echo "\t\t\t\t\t\t\t".'</fieldset>'."\n";
 			}
-			
+
 			echo "\t\t\t\t\t\t\t".'<fieldset><legend><span>'.pun_htmlspecialchars($cur_forum['cat_name']).'</span></legend>'."\n";
 			echo "\t\t\t\t\t\t\t\t".'<div class="rbox">';
 			$cur_category = $cur_forum['cid'];
@@ -830,7 +830,7 @@ if ($pun_config['o_search_all_forums'] == '1' || $pun_user['is_admmod'])
 		echo "\t\t\t\t\t\t\t\t".'</div>'."\n";
 		echo "\t\t\t\t\t\t\t".'</fieldset>'."\n";
 	}
-	
+
 	echo "\t\t\t\t\t\t".'</div>'."\n";
 	echo "\t\t\t\t\t\t".'</div>'."\n";
 }

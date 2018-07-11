@@ -51,7 +51,7 @@ class DBLayer
 
 		return $this->link_id;
 	}
-	
+
 
 	function DBLayer($db_host, $db_username, $db_password, $db_name, $db_prefix, $p_connect)
 	{
@@ -130,6 +130,12 @@ class DBLayer
 	function fetch_row($query_id = 0)
 	{
 		return ($query_id) ? @mysql_fetch_row($query_id) : false;
+	}
+
+
+	function has_rows($query_id = 0)
+	{
+		return ($query_id) ? @mysql_num_rows($query_id) > 0 : false;
 	}
 
 

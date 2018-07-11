@@ -157,6 +157,12 @@ class DBLayer
 	}
 
 
+	function has_rows($query_id = 0)
+	{
+		return ($query_id) ? @mysqli_num_rows($query_id) > 0 : false;
+	}
+
+
 	function num_rows($query_id = 0)
 	{
 		return ($query_id) ? @mysqli_num_rows($query_id) : false;

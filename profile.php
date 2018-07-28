@@ -195,7 +195,7 @@ else if ($action == 'change_email')
 	{
 		if (pun_hash($_POST['req_password']) !== $pun_user['password'])
 			message($lang_profile['Wrong pass']);
-			
+
 		// Make sure they got here from the site
 		confirm_referrer('profile.php');
 
@@ -325,7 +325,7 @@ else if ($action == 'upload_avatar' || $action == 'upload_avatar2')
 	{
 		if (!isset($_FILES['req_file']))
 			message($lang_profile['No file']);
-			
+
 		// Make sure they got here from the site
 		confirm_referrer('profile.php');
 
@@ -373,10 +373,10 @@ else if ($action == 'upload_avatar' || $action == 'upload_avatar2')
 				message($lang_profile['Too large'].' '.forum_number_format($pun_config['o_avatars_size']).' '.$lang_profile['bytes'].'.');
 
 			// Move the file to the avatar directory. We do this before checking the width/height to circumvent open_basedir restrictions
-			if (!@move_uploaded_file($uploaded_file['tmp_name'], PUN_ROOT.$pun_config['o_avatars_dir'].'/'.$id.'.tmp'))
+			if (!@move_uploaded_file($uploaded_file['tmp_name'], get_avatar_dir().$id.'.tmp'))
 				message($lang_profile['Move failed'].' <a href="mailto:'.pun_htmlspecialchars($pun_config['o_admin_email']).'">'.pun_htmlspecialchars($pun_config['o_admin_email']).'</a>.');
 
-			list($width, $height, $type,) = @getimagesize(PUN_ROOT.$pun_config['o_avatars_dir'].'/'.$id.'.tmp');
+			list($width, $height, $type,) = @getimagesize(get_avatar_dir().$id.'.tmp');
 
 			// Determine type
 			if ($type == IMAGETYPE_GIF)
@@ -388,21 +388,21 @@ else if ($action == 'upload_avatar' || $action == 'upload_avatar2')
 			else
 			{
 				// Invalid type
-				@unlink(PUN_ROOT.$pun_config['o_avatars_dir'].'/'.$id.'.tmp');
+				@unlink(get_avatar_dir().$id.'.tmp');
 				message($lang_profile['Bad type']);
 			}
 
 			// Now check the width/height
 			if (empty($width) || empty($height) || $width > $pun_config['o_avatars_width'] || $height > $pun_config['o_avatars_height'])
 			{
-				@unlink(PUN_ROOT.$pun_config['o_avatars_dir'].'/'.$id.'.tmp');
+				@unlink(get_avatar_dir().$id.'.tmp');
 				message($lang_profile['Too wide or high'].' '.$pun_config['o_avatars_width'].'x'.$pun_config['o_avatars_height'].' '.$lang_profile['pixels'].'.');
 			}
 
 			// Delete any old avatars and put the new one in place
 			delete_avatar($id);
-			@rename(PUN_ROOT.$pun_config['o_avatars_dir'].'/'.$id.'.tmp', PUN_ROOT.$pun_config['o_avatars_dir'].'/'.$id.$extension);
-			@chmod(PUN_ROOT.$pun_config['o_avatars_dir'].'/'.$id.$extension, 0644);
+			@rename(get_avatar_dir().$id.'.tmp', get_avatar_dir().$id.$extension);
+			@chmod(get_avatar_dir().$id.$extension, 0644);
 		}
 		else
 			message($lang_profile['Unknown failure']);

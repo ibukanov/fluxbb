@@ -567,6 +567,19 @@ function generate_profile_menu($page = '')
 
 
 //
+// Get directory holding users' avatars
+//
+function get_avatar_dir()
+{
+	global $pun_config;
+
+	if (defined('FORUM_AVATAR_DIR'))
+		return FORUM_AVATAR_DIR;
+	return PUN_ROOT.$pun_config['o_avatars_dir'].'/';
+}
+
+
+//
 // Outputs markup to display a user's avatar
 //
 function generate_avatar_markup($user_id)
@@ -578,11 +591,14 @@ function generate_avatar_markup($user_id)
 
 	foreach ($filetypes as $cur_type)
 	{
-		$path = $pun_config['o_avatars_dir'].'/'.$user_id.'.'.$cur_type;
+		$file = $user_id.'.'.$cur_type;
+		$path = get_avatar_dir().$file;
 
-		if (file_exists(PUN_ROOT.$path) && $img_size = getimagesize(PUN_ROOT.$path))
+		if (file_exists($path) && $img_size = getimagesize($path))
 		{
-			$avatar_markup = '<img src="'.pun_htmlspecialchars(get_base_url(true).'/'.$path.'?m='.filemtime(PUN_ROOT.$path)).'" '.$img_size[3].' alt="" />';
+			$base_url = defined('FORUM_AVATAR_BASE_URL') ? FORUM_AVATAR_BASE_URL
+				: get_base_url(true).'/'.$pun_config['o_avatars_dir'].'/';
+			$avatar_markup = '<img src="'.pun_htmlspecialchars($base_url.$file.'?m='.filemtime($path)).'" '.$img_size[3].' alt="" />';
 			break;
 		}
 	}
@@ -722,8 +738,9 @@ function delete_avatar($user_id)
 	// Delete user avatar
 	foreach ($filetypes as $cur_type)
 	{
-		if (file_exists(PUN_ROOT.$pun_config['o_avatars_dir'].'/'.$user_id.'.'.$cur_type))
-			@unlink(PUN_ROOT.$pun_config['o_avatars_dir'].'/'.$user_id.'.'.$cur_type);
+		$path = get_avatar_dir().$user_id.'.'.$cur_type;
+		if (file_exists($path))
+			@unlink($path);
 	}
 }
 

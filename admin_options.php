@@ -92,7 +92,7 @@ if (isset($_POST['form_sent']))
 	// Make sure base_url doesn't end with a slash
 	if (substr($form['base_url'], -1) == '/')
 		$form['base_url'] = substr($form['base_url'], 0, -1);
-		
+
 	// Convert IDN to Punycode if needed
 	if (preg_match('/[^\x00-\x7F]/', $form['base_url']))
 	{
@@ -665,6 +665,10 @@ generate_admin_menu('options');
 										<span class="clearb"><?php echo $lang_admin_options['Use avatars help'] ?></span>
 									</td>
 								</tr>
+<?php
+	// Avatar directory can only be changed if not pre-defined in config.php
+	if (!defined('FORUM_AVATAR_DIR')):
+?>
 								<tr>
 									<th scope="row"><?php echo $lang_admin_options['Upload directory label'] ?></th>
 									<td>
@@ -672,6 +676,7 @@ generate_admin_menu('options');
 										<span><?php echo $lang_admin_options['Upload directory help'] ?></span>
 									</td>
 								</tr>
+<?php endif; ?>
 								<tr>
 									<th scope="row"><?php echo $lang_admin_options['Max width label'] ?></th>
 									<td>
@@ -779,7 +784,7 @@ generate_admin_menu('options');
 										<label class="conl"><input type="radio" name="form[regs_allow]" value="1"<?php if ($pun_config['o_regs_allow'] == '1') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['Yes'] ?></strong></label>
 										<label class="conl"><input type="radio" name="form[regs_allow]" value="0"<?php if ($pun_config['o_regs_allow'] == '0') echo ' checked="checked"' ?> />&#160;<strong><?php echo $lang_admin_common['No'] ?></strong></label>
 										<span class="clearb"><?php echo $lang_admin_options['Allow new help'] ?></span>
-									</td> 
+									</td>
 								</tr>
 								<tr>
 									<th scope="row"><?php echo $lang_admin_options['Verify label'] ?></th>
